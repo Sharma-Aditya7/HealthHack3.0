@@ -1,0 +1,81 @@
+.tools {
+  text-align: center;
+  padding: 50px 20px;
+  background-color: #f9f9f9; /* Light background */
+  min-height: 80vh; /* Ensure the page takes up full height */
+}
+
+.tools h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #333; /* Dark gray heading */
+}
+
+.tools p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  color: #666; /* Medium gray text */
+}
+
+.upload-section {
+  margin: 0 auto;
+  max-width: 400px;
+  background-color:#f9f9f9;
+  text-align: center;
+}
+
+.upload-section input[type='file'] {
+  padding: 10px;
+  border: none;
+  background-color: #333; /* Purple background */
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.upload-section button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  background-color: #6A0DAD;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-section button:hover {
+  background-color: #9531dd;
+}
+
+/* Loading Screen */
+.loading-screen {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #6A0DAD;
+}
+
+/* Results Section */
+.results-section {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.results-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.results-section p {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: #555;
+}
