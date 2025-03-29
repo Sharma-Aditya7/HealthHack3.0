@@ -1,52 +1,70 @@
-# HealthHack 3.0 - Team CRUX
+# Getting Started with Create React App
 
-## Team Members
-- **Aditya Sharma**
-- **Shashwat**
-- **Adithya Holla**
-- **Archita Jain**
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Project Title
-*To be decided based on the final problem statement*
+## Available Scripts
 
-## Problem Statement
-*To be updated once the final problem statement is selected*
+In the project directory, you can run:
 
-## Overview
-This project is developed as part of **HealthHack 3.0**, a hackathon focused on innovative healthcare solutions. Our goal is to leverage technology to address key challenges in the healthcare domain and improve accessibility, efficiency, and overall health outcomes.
+### `npm start`
 
-## Tech Stack
-- **Programming Language:** Python, JavaScript (if applicable)
-- **Machine Learning Frameworks:** TensorFlow / PyTorch (if applicable)
-- **Frontend:** React / Flutter (if applicable)
-- **Backend:** Flask / FastAPI / Node.js (if applicable)
-- **Database:** PostgreSQL / Firebase / MongoDB (if applicable)
-- **APIs & Tools:** OpenAI API, Google Healthcare API, Twilio, etc. (as required)
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-## Features
-- **Feature 1** - Description
-- **Feature 2** - Description
-- **Feature 3** - Description
-- Additional features to be defined during the hackathon.
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-## Implementation Plan
-1. **Ideation & Research** – Understanding the problem and defining a solution.
-2. **Tech Stack Finalization** – Choosing the right tools and frameworks.
-3. **Development** – Implementing the solution in phases.
-4. **Testing & Iteration** – Refining based on feedback.
-5. **Final Submission & Presentation** – Showcasing our solution.
+### `npm test`
 
-## Expected Outcome
-- A functional prototype demonstrating our solution.
-- A presentation or demo to explain our approach.
-- Potential real-world applications and impact assessment.
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-## How to Run the Project
-*Instructions will be updated based on the implementation.*
+### `npm run build`
 
-## Contact
-For any queries, reach out to **Team CRUX** members.
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
----
-*This README will be continuously updated as the hackathon progresses.*
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
