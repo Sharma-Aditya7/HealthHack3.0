@@ -1,0 +1,19 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "Backend.py",
+            "use": "@vercel/python"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/upload",
+            "dest": "Backend.py"
+        },
+        {
+            "src": "/processed_images/(.*)",
+            "dest": "Backend.py"
+        }
+    ]
+} 
