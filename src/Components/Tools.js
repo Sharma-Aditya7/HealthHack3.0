@@ -162,10 +162,10 @@ const Tools = () => {
                       <div 
                         key={index} 
                         className="image-card"
-                        onClick={() => setSelectedImage(`http://localhost:5000/api/processed_images/${imagePath}`)}
+                        onClick={() => setSelectedImage(`${process.env.REACT_APP_API_URL}/processed_images/${imagePath}`)}
                       >
                         <img
-                          src={`http://localhost:5000/api/processed_images/${imagePath}`}
+                          src={`${process.env.REACT_APP_API_URL}/processed_images/${imagePath}`}
                           alt={`Processed Image ${index + 1}`}
                         />
                         <div className="image-overlay">
