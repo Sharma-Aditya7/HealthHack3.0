@@ -59,8 +59,10 @@ def process_file(file_path):
         most_common_class = Counter(class_names).most_common(1)[0][0]
         max_probability = float(round(np.max(probabilities) * 100, 2))  # Convert to Python float
         # Determine risk level based on probability
-        if max_probability > 30.0:  # Convert percentage back to decimal for comparison
-            risk_level = "RISK"
+        if max_probability >= 70.0:
+            risk_level = "High"
+        elif max_probability >= 40.0:
+            risk_level = "Medium"
         else:
             risk_level = "Low"
     else:
