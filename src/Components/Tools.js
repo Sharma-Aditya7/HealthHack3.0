@@ -27,10 +27,10 @@ const Tools = () => {
     try {
       const formData = new FormData();
       files.forEach((file, index) => {
-        formData.append(`file${index}`, file);
+        formData.append('file', file);
       });
 
-      const response = await fetch('http://localhost:5000/api/upload', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/upload`, {
         method: 'POST',
         body: formData,
       });
