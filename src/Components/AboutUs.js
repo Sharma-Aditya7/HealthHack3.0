@@ -84,9 +84,9 @@ const AboutUs = () => {
                 <img src="/Memberpics/Coder1.jpg" alt="Aditya Sharma" />
                 <div className="member-overlay">
                   <div className="social-links">
-                    <a href="#" className="social-link">LinkedIn</a>
-                    <a href="#" className="social-link">GitHub</a>
-                    <a href="#" className="social-link">Twitter</a>
+                    <a href="https://www.linkedin.com/in/aditya-sharma" target="_blank" rel="noopener noreferrer" className="social-link">LinkedIn</a>
+                    <a href="https://github.com/Sharma-Aditya7" target="_blank" rel="noopener noreferrer" className="social-link">GitHub</a>
+                    <a href="https://twitter.com/aditya_sharma" target="_blank" rel="noopener noreferrer" className="social-link">Twitter</a>
                   </div>
                 </div>
               </div>
@@ -98,9 +98,9 @@ const AboutUs = () => {
                 <img src="/Memberpics/Coder2.jpg" alt="Archita" />
                 <div className="member-overlay">
                   <div className="social-links">
-                    <a href="#" className="social-link">LinkedIn</a>
-                    <a href="#" className="social-link">GitHub</a>
-                    <a href="#" className="social-link">Twitter</a>
+                    <a href="https://www.linkedin.com/in/archita" target="_blank" rel="noopener noreferrer" className="social-link">LinkedIn</a>
+                    <a href="https://github.com/archita" target="_blank" rel="noopener noreferrer" className="social-link">GitHub</a>
+                    <a href="https://twitter.com/archita" target="_blank" rel="noopener noreferrer" className="social-link">Twitter</a>
                   </div>
                 </div>
               </div>
@@ -112,9 +112,9 @@ const AboutUs = () => {
                 <img src="/Memberpics/Coder3.jpg" alt="Shashwat" />
                 <div className="member-overlay">
                   <div className="social-links">
-                    <a href="#" className="social-link">LinkedIn</a>
-                    <a href="#" className="social-link">GitHub</a>
-                    <a href="#" className="social-link">Twitter</a>
+                    <a href="https://www.linkedin.com/in/shashwat" target="_blank" rel="noopener noreferrer" className="social-link">LinkedIn</a>
+                    <a href="https://github.com/shashwat" target="_blank" rel="noopener noreferrer" className="social-link">GitHub</a>
+                    <a href="https://twitter.com/shashwat" target="_blank" rel="noopener noreferrer" className="social-link">Twitter</a>
                   </div>
                 </div>
               </div>
@@ -126,9 +126,9 @@ const AboutUs = () => {
                 <img src="/Memberpics/Coder4.jpg" alt="Adithya V Holla" />
                 <div className="member-overlay">
                   <div className="social-links">
-                    <a href="#" className="social-link">LinkedIn</a>
-                    <a href="#" className="social-link">GitHub</a>
-                    <a href="#" className="social-link">Twitter</a>
+                    <a href="https://www.linkedin.com/in/adithya-holla" target="_blank" rel="noopener noreferrer" className="social-link">LinkedIn</a>
+                    <a href="https://github.com/adithya-holla" target="_blank" rel="noopener noreferrer" className="social-link">GitHub</a>
+                    <a href="https://twitter.com/adithya_holla" target="_blank" rel="noopener noreferrer" className="social-link">Twitter</a>
                   </div>
                 </div>
               </div>
