@@ -27,7 +27,7 @@ const Tools = () => {
       });
 
       // Send the files to the backend
-      const response = await fetch('http://localhost:5000/upload', {
+      const response = await fetch('http://localhost:5000/api/upload', {
         method: 'POST',
         body: formData,
       });
@@ -76,7 +76,7 @@ const Tools = () => {
               {result.processed_images.map((imagePath, index) => (
                 <img
                   key={index}
-                  src={`http://localhost:5000/processed_images/${imagePath.split('\\').pop()}`}
+                  src={`http://localhost:5000/api/processed_images/${imagePath}`}
                   alt={`Processed Image ${index + 1}`}
                   style={{ maxWidth: '450px', margin: '10px' }}
                 />
