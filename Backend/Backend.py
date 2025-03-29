@@ -7,9 +7,35 @@ import numpy as np
 from ultralytics import YOLO
 import tempfile
 import traceback
+import uuid
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from dotenv import load_dotenv
+import requests
+import logging
+import torch
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+# Configure CORS to allow requests from Netlify domain
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "https://safebrains.netlify.app",
+            "http://localhost:3000",
+            "http://localhost:5000"
+        ],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 # Use local directories for file storage
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
@@ -29,13 +55,92 @@ def allowed_file(filename):
     """Check if the file has an allowed extension."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Load your YOLOv8 model
-MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'best.pt')
-try:
-    model = YOLO(MODEL_PATH)
-except Exception as e:
-    print(f"Error loading model: {e}")
-    model = None
+# Create a temporary directory for processing
+TEMP_DIR = tempfile.mkdtemp()
+
+# Global model variable
+model = None
+
+def load_model():
+    try:
+        # Configure Cloudinary
+        cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME')
+        api_key = os.getenv('CLOUDINARY_API_KEY')
+        api_secret = os.getenv('CLOUDINARY_API_SECRET')
+        
+        if not all([cloud_name, api_key, api_secret]):
+            raise ValueError("Missing Cloudinary credentials in environment variables")
+            
+        cloudinary.config(
+            cloud_name=cloud_name,
+            api_key=api_key,
+            api_secret=api_secret
+        )
+        
+        logger.info("Cloudinary configured successfully")
+        
+        # Use the direct URL for the model file
+        model_url = "https://res.cloudinary.com/dhtta5hni/raw/upload/v1743272767/best_ohckbc.pt"
+        model_path = os.path.join(TEMP_DIR, 'best.pt')
+        
+        logger.info(f"Downloading model from: {model_url}")
+        
+        # Download the model file with timeout and retry
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = requests.get(model_url, timeout=30)
+                response.raise_for_status()
+                with open(model_path, 'wb') as f:
+                    f.write(response.content)
+                logger.info(f"Model downloaded successfully to {model_path}")
+                break
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Attempt {attempt + 1} failed: {str(e)}")
+                if attempt == max_retries - 1:
+                    raise
+        
+        # Load the model with the new security requirements
+        logger.info("Loading YOLO model...")
+        
+        # Load the model directly with YOLO
+        model = YOLO(model_path)
+        
+        # Verify model loaded successfully
+        if model is None:
+            raise ValueError("Failed to load YOLO model")
+            
+        logger.info("Model loaded successfully")
+        return model
+    except Exception as e:
+        logger.error(f"Error loading model: {str(e)}")
+        raise
+
+@app.before_request
+def before_request():
+    # Log the request details
+    logger.info(f"Request: {request.method} {request.url}")
+    logger.info(f"Headers: {dict(request.headers)}")
+    logger.info(f"Origin: {request.headers.get('Origin')}")
+
+@app.after_request
+def after_request(response):
+    # Add CORS headers to the response
+    response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin', '*'))
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    return response
+
+@app.before_first_request
+def initialize_model():
+    global model
+    try:
+        model = load_model()
+        logger.info("Model initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize model: {str(e)}")
+        # Don't raise the exception here, let the application start
+        # The upload endpoint will handle the case when model is None
 
 def process_file(file_path):
     """
@@ -88,62 +193,79 @@ def process_file(file_path):
     }
     return result
 
-@app.route('/api/upload', methods=['POST'])
-def upload_files():
-    """Handle multiple file uploads and process them to provide a single result."""
-    if model is None:
-        return jsonify({"error": "Model not loaded"}), 500
-
-    if len(request.files) == 0:
-        return jsonify({"error": "No files part"}), 400
-
-    tumor_types = []
-    risk_levels = []
-    probabilities = []
-    processed_images = []
+@app.route('/upload', methods=['POST', 'OPTIONS'])
+def upload_file():
+    if request.method == 'OPTIONS':
+        # Handle preflight request
+        response = jsonify({'message': 'OK'})
+        response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin', '*'))
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        return response
 
     try:
-        for key, file in request.files.items():
-            if file.filename == '':
-                return jsonify({"error": "One of the selected files is empty"}), 400
+        if model is None:
+            return jsonify({
+                'error': 'Model not initialized. Please check the server logs for details.',
+                'details': 'The YOLO model could not be loaded. This might be because the model file could not be downloaded.'
+            }), 503
             
-            if not allowed_file(file.filename):
-                return jsonify({"error": f"Unsupported file format for {file.filename}. Allowed formats: jpg, jpeg, png"}), 400
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file part'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+        
+        if file:
+            # Generate unique filename
+            unique_filename = f"{uuid.uuid4()}_{file.filename}"
             
-            filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_path)
-            print(f"File saved at: {file_path}")
+            # Upload original image to Cloudinary
+            upload_result = cloudinary.uploader.upload(
+                file,
+                public_id=f"original_images/{unique_filename}",
+                resource_type="auto"
+            )
+            original_url = upload_result['secure_url']
             
-            try:
-                result = process_file(file_path)
-                tumor_types.append(result["tumor_type"])
-                risk_levels.append(result["risk_level"])
-                probabilities.append(float(result["probability"]))  # Ensure float type
-                processed_images.append(result["processed_image_path"])  # Store just the filename
-                print(f"Processed image saved at: {result['processed_image_path']}")
-            except Exception as e:
-                print(f"Error processing file: {e}")
-                print(f"Traceback: {traceback.format_exc()}")
-                return jsonify({"error": f"Failed to process the file {file.filename}: {str(e)}"}), 500
-
-        # Aggregate results
-        final_tumor_type = Counter(tumor_types).most_common(1)[0][0]
-        final_risk_level = Counter(risk_levels).most_common(1)[0][0]
-        max_probability = float(max(probabilities))  # Ensure float type
-
-        final_result = {
-            "tumor_type": str(final_tumor_type),  # Ensure string type
-            "risk_level": str(final_risk_level),  # Ensure string type
-            "probability": float(max_probability),  # Ensure float type
-            "processed_images": processed_images  # List of filenames
-        }
-        print(f"Final result: {final_result}")
-        return jsonify(final_result)
+            # Process the image with YOLO
+            results = model.predict(original_url)
+            
+            # Save the processed image temporarily
+            processed_filename = f"processed_{unique_filename}"
+            processed_path = os.path.join(TEMP_DIR, processed_filename)
+            results[0].save(processed_path)
+            
+            # Upload processed image to Cloudinary
+            processed_upload = cloudinary.uploader.upload(
+                processed_path,
+                public_id=f"processed_images/{processed_filename}",
+                resource_type="auto"
+            )
+            processed_url = processed_upload['secure_url']
+            
+            # Clean up temporary files
+            os.remove(processed_path)
+            
+            return jsonify({
+                'message': 'File uploaded and processed successfully',
+                'original_image': original_url,
+                'processed_image': processed_url
+            })
+            
     except Exception as e:
-        print(f"Unexpected error: {e}")
-        print(f"Traceback: {traceback.format_exc()}")
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        logger.error(f"Error processing file: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        'status': 'healthy',
+        'model_loaded': model is not None,
+        'cloudinary_configured': bool(os.getenv('CLOUDINARY_CLOUD_NAME')),
+        'model_exists': bool(model)
+    })
 
 @app.route('/api/processed_images/<filename>', methods=['GET'])
 def get_processed_image(filename):
@@ -152,4 +274,5 @@ def get_processed_image(filename):
 
 # For local development
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
