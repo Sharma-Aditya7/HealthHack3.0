@@ -31,16 +31,23 @@ model = None
 def load_model():
     try:
         # Configure Cloudinary
+        cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME')
+        api_key = os.getenv('CLOUDINARY_API_KEY')
+        api_secret = os.getenv('CLOUDINARY_API_SECRET')
+        
+        if not all([cloud_name, api_key, api_secret]):
+            raise ValueError("Missing Cloudinary credentials in environment variables")
+            
         cloudinary.config(
-            cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
-            api_key=os.getenv('CLOUDINARY_API_KEY'),
-            api_secret=os.getenv('CLOUDINARY_API_SECRET')
+            cloud_name=cloud_name,
+            api_key=api_key,
+            api_secret=api_secret
         )
         
         logger.info("Cloudinary configured successfully")
         
-        # Download model from Cloudinary
-        model_url = cloudinary.CloudinaryImage("models/best").build_url()
+        # Use the direct URL for the model file
+        model_url = "https://res.cloudinary.com/dhtta5hni/raw/upload/v1743272767/best_ohckbc.pt"
         model_path = os.path.join(TEMP_DIR, 'best.pt')
         
         logger.info(f"Downloading model from: {model_url}")
@@ -55,7 +62,7 @@ def load_model():
                     f.write(response.content)
                 logger.info(f"Model downloaded successfully to {model_path}")
                 break
-            except Exception as e:
+            except requests.exceptions.RequestException as e:
                 logger.error(f"Attempt {attempt + 1} failed: {str(e)}")
                 if attempt == max_retries - 1:
                     raise
@@ -75,13 +82,17 @@ def initialize_model():
         logger.info("Model initialized successfully")
     except Exception as e:
         logger.error(f"Failed to initialize model: {str(e)}")
-        raise
+        # Don't raise the exception here, let the application start
+        # The upload endpoint will handle the case when model is None
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
     try:
         if model is None:
-            return jsonify({'error': 'Model not initialized'}), 500
+            return jsonify({
+                'error': 'Model not initialized. Please check the server logs for details.',
+                'details': 'The YOLO model could not be loaded. This might be because the model file could not be downloaded.'
+            }), 503
             
         if 'file' not in request.files:
             return jsonify({'error': 'No file part'}), 400
@@ -135,7 +146,9 @@ def upload_file():
 def health_check():
     return jsonify({
         'status': 'healthy',
-        'model_loaded': model is not None
+        'model_loaded': model is not None,
+        'cloudinary_configured': bool(os.getenv('CLOUDINARY_CLOUD_NAME')),
+        'model_exists': bool(model)
     })
 
 if __name__ == '__main__':
