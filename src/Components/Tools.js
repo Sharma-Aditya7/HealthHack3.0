@@ -166,7 +166,7 @@ const Tools = () => {
                       >
                         <img
                           src={`${process.env.REACT_APP_API_URL}/processed_images/${imagePath}`}
-                          alt={`Processed Image ${index + 1}`}
+                          alt={`Analysis result ${index + 1}`}
                         />
                         <div className="image-overlay">
                           <span>Click to View Full Size</span>
