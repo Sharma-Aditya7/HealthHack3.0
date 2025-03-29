@@ -3,7 +3,7 @@ services:
     name: tumor-detect-backend
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn Backend:app
+    startCommand: gunicorn Backend:app --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0
