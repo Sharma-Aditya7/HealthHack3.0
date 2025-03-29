@@ -11,6 +11,8 @@ import tempfile
 import shutil
 import requests
 import logging
+import torch
+from ultralytics.nn.tasks import DetectionModel
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -67,9 +69,17 @@ def load_model():
                 if attempt == max_retries - 1:
                     raise
         
-        # Load the model
+        # Load the model with the new security requirements
         logger.info("Loading YOLO model...")
-        return YOLO(model_path)
+        
+        # Add DetectionModel to safe globals
+        torch.serialization.add_safe_globals([DetectionModel])
+        
+        # Load the model with weights_only=False since we trust the source
+        model = YOLO(model_path)
+        model.model = torch.load(model_path, weights_only=False)
+        
+        return model
     except Exception as e:
         logger.error(f"Error loading model: {str(e)}")
         raise
