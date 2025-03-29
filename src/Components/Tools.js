@@ -30,14 +30,19 @@ const Tools = () => {
         formData.append('file', file);
       });
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/upload`, {
+      // Get the API URL from environment variables or use a default
+      const apiUrl = process.env.REACT_APP_API_URL || 'https://tumor-detect.onrender.com';
+      console.log('Using API URL:', apiUrl); // Debug log
+
+      const response = await fetch(`${apiUrl}/upload`, {
         method: 'POST',
         body: formData,
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to process the files.");
+        const errorText = await response.text();
+        console.error('Server response:', errorText); // Debug log
+        throw new Error(`Server error: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();

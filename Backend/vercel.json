@@ -3,17 +3,17 @@
     "builds": [
         {
             "src": "Backend.py",
-            "use": "@vercel/python",
-            "config": { "runtime": "python3.9" }
+            "use": "@vercel/python"
         }
     ],
     "routes": [
         {
-            "src": "/(.*)",
+            "src": "/upload",
+            "dest": "Backend.py"
+        },
+        {
+            "src": "/processed_images/(.*)",
             "dest": "Backend.py"
         }
-    ],
-    "env": {
-        "PYTHONUNBUFFERED": "1"
-    }
+    ]
 } 
