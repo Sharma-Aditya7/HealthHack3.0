@@ -12,7 +12,6 @@ import shutil
 import requests
 import logging
 import torch
-from ultralytics.nn.tasks import DetectionModel
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -72,13 +71,14 @@ def load_model():
         # Load the model with the new security requirements
         logger.info("Loading YOLO model...")
         
-        # Add DetectionModel to safe globals
-        torch.serialization.add_safe_globals([DetectionModel])
-        
-        # Load the model with weights_only=False since we trust the source
+        # Load the model directly with YOLO
         model = YOLO(model_path)
-        model.model = torch.load(model_path, weights_only=False)
         
+        # Verify model loaded successfully
+        if model is None:
+            raise ValueError("Failed to load YOLO model")
+            
+        logger.info("Model loaded successfully")
         return model
     except Exception as e:
         logger.error(f"Error loading model: {str(e)}")
